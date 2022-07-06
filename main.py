@@ -3,10 +3,10 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog as fd
-
 from PIL import Image, ImageTk
+import time
 
-bgcolour = ('limegreen') #Sets bgcolour as global variable
+bgcolour = ('lightgreen') #Sets bgcolour as global variable
 
 
 main_file = open("bridge1.txt", "r")
@@ -16,8 +16,8 @@ cardNums = main_file.readline()
 cardChar = main_file.readlines()
 deck = open(file, "r")
 n = 2
-card_deck = deck.readline()
-cardDeck = ([card_deck[i:i+n] for i in range(0, len(card_deck), n)])
+cardDeck = deck.readline()
+cardDeck = ([cardDeck[i:i+n] for i in range(0, len(cardDeck), n)])
 random.shuffle((cardDeck))
 
 
@@ -62,19 +62,18 @@ class load():
         gameSelector() #Calls the game selector function
 
 
-  
-
 def gameSelector():
     global cardDeck
     #Creating tkinter window
     root = Tk()
     root.title('Card Games')
-    root.geometry('1920x1080')
+    root.geometry('1266x668')
     root.config(bg=bgcolour)
     padx = 10
     pady = 10
-    card = 1
-    xAxis = 500
+    card = 0
+    cards = []
+    coloumCard = 2
     yAxis = 100
 
     #labels
@@ -92,21 +91,38 @@ def gameSelector():
     def gameChanged():
         print(gameChoosen.get())
 
-    gameSelectButton = tk.Button(root, text="Select Game", font=(200), compound="center", borderwidth=0, bg='blue', highlightthickness=0, command= gameChoosen.bind('<<ComboboxSelected>>', gameChanged))
+    gameSelectButton = tk.Button(root, text="Select Game", font=(200), compound="center", borderwidth=0, bg='red', highlightthickness=0, command= gameChoosen.bind('<<ComboboxSelected>>', gameChanged))
     gameSelectButton.grid(column = 1, row = 2, padx = padx, pady = pady)
-
+    print(cardDeck)
     while card < len(cardDeck):
-        print(cardDeck[card] + ".gif")
-        cardImg = Image.open(cardDeck[card] + ".gif")
+        cardImg = (Image.open(f"cards/{cardDeck[card]}.gif"))
+        cardImg = cardImg.resize((90,126), Image.Resampling.LANCZOS) # Halfs the size of the large playing cards. For the loading screen this is cause we don't need it to be large
         cardImg = ImageTk.PhotoImage(cardImg)
-        cardImg = tk.Label(root, image=cardImg)
-        cardImg.place(x = xAxis)
-        cardImg.place(y = yAxis)
-        xAxis + 3
-        yAxis + 3
+        cards.append(cardImg)
+        card +=1
+
+    card = 0
+    # print(cards)
+    while card < len(cardDeck):
+        print (coloumCard)
+        cardImg = tk.Label(root,image=cards[card])
+        cardImg.grid(column=4, row =1)
+        # cardImg.place(x=xAxis, y=yAxis)
+        coloumCard += 1
+        # yAxis += 12
         card += 1
 
+    def windowloop():
+        windowLoop = 0
+        while windowLoop <= 10:
+            if windowLoop == 0:
+                print("The width of Tkinter window:", root.winfo_width())
+                print("The height of Tkinter window:", root.winfo_height())
+                # time.sleep(50)
+
+    windowloop()
     root.mainloop()
+    
 
 
 
@@ -115,4 +131,3 @@ def gameSelector():
 if __name__ == '__main__':
     gameSelector()
     #load()
-    
