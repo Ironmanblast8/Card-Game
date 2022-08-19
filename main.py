@@ -4,7 +4,10 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog as fd
 from PIL import Image, ImageTk
+
 import time
+
+from matplotlib import image
 
 bgcolour = ('lightgreen') #Sets bgcolour as global variable
 
@@ -67,14 +70,18 @@ def gameSelector():
     #Creating tkinter window
     root = Tk()
     root.title('Card Games')
-    root.geometry('1266x668')
+    root.geometry('1920x1080')
     root.config(bg=bgcolour)
+    # Declaring constrants
     padx = 10
     pady = 10
     card = 0
+    buttonRow = 0
+    menuRow = 1
+    i = 0
+    menuCol = 1
     cards = []
-    coloumCard = 2
-    yAxis = 100
+    gridSize = 8
 
     #labels
     tk.Label(root, text ="Card Games", fg='DarkGreen', bg=bgcolour, font = ("Times New Roman", 50)).grid(column = 2, row = 0, padx = padx, pady = pady)
@@ -93,34 +100,35 @@ def gameSelector():
 
     gameSelectButton = tk.Button(root, text="Select Game", font=(200), compound="center", borderwidth=0, bg='red', highlightthickness=0, command= gameChoosen.bind('<<ComboboxSelected>>', gameChanged))
     gameSelectButton.grid(column = 1, row = 2, padx = padx, pady = pady)
+    cardsFrame = tk.Frame(root)
+    cardsFrame.grid(rows=1, column=2)
     print(cardDeck)
     while card < len(cardDeck):
         cardImg = (Image.open(f"cards/{cardDeck[card]}.gif"))
         cardImg = cardImg.resize((90,126), Image.Resampling.LANCZOS) # Halfs the size of the large playing cards. For the loading screen this is cause we don't need it to be large
         cardImg = ImageTk.PhotoImage(cardImg)
         cards.append(cardImg)
-        card +=1
-
-    card = 0
-    # print(cards)
-    while card < len(cardDeck):
-        print (coloumCard)
-        cardImg = tk.Label(root,image=cards[card])
-        cardImg.grid(column=4, row =1)
-        # cardImg.place(x=xAxis, y=yAxis)
-        coloumCard += 1
-        # yAxis += 12
         card += 1
+        button=tk.Button(cardsFrame, image=cardImg, command= lambda i = i:  print(cardImg))
+        if buttonRow < gridSize:
+            button.grid(row=menuRow,column=menuCol)
+            buttonRow += 1
+            menuCol += 1
+        if buttonRow == gridSize:
+             menuRow += 1        
+             buttonRow = 0
+             menuCol = 1
 
-    def windowloop():
+    """def windowloop():
         windowLoop = 0
         while windowLoop <= 10:
             if windowLoop == 0:
                 print("The width of Tkinter window:", root.winfo_width())
                 print("The height of Tkinter window:", root.winfo_height())
-                # time.sleep(50)
+                # time.sleep(50)"""
+                
 
-    windowloop()
+    
     root.mainloop()
     
 
