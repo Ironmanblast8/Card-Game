@@ -105,7 +105,7 @@ def gameSelector():
     print(cardDeck)
     while card < len(cardDeck):
         cardImg = (Image.open(f"cards/{cardDeck[card]}.gif"))
-        cardImg = cardImg.resize((90,126), Image.Resampling.LANCZOS) # Halfs the size of the large playing cards. For the loading screen this is cause we don't need it to be large
+        cardImg = cardImg.resize((108 ,151)) # Halfs the size of the large playing cards. For the loading screen this is cause we don't need it to be large
         cardImg = ImageTk.PhotoImage(cardImg)
         cards.append(cardImg)
         card += 1
