@@ -5,23 +5,18 @@ from tkinter import ttk
 from tkinter import filedialog as fd
 from PIL import Image, ImageTk
 
-import time
-
-from matplotlib import image
-
 bgcolour = ('lightgreen') #Sets bgcolour as global variable
 
-
-main_file = open("bridge1.txt", "r")
-file = main_file.readline()
-file = file[:-1]
-cardNums = main_file.readline()
-cardChar = main_file.readlines()
-deck = open(file, "r")
-n = 2
-cardDeck = deck.readline()
-cardDeck = ([cardDeck[i:i+n] for i in range(0, len(cardDeck), n)])
-random.shuffle((cardDeck))
+# main_file = open("bridge1.txt", "r")
+# file = main_file.readline()
+# file = file[:-1]
+# cardNums = main_file.readline()
+# cardChar = main_file.readlines()
+# deck = open(file, "r")
+# n = 2
+# cardDeck = deck.readline()
+# cardDeck = ([cardDeck[i:i+n] for i in range(0, len(cardDeck), n)])
+# random.shuffle((cardDeck))
 
 
 class load():
@@ -41,18 +36,11 @@ class load():
             main_file = fd.askopenfile()
             file = main_file.readline()
             file = file[:-1]
-            cardNums = main_file.readline()
-            cardChar = main_file.readlines()
             deck = open(file, "r")
             n = 2
             card_deck = deck.readline()
             cardDeck = ([card_deck[i:i+n] for i in range(0, len(card_deck), n)])
             random.shuffle((cardDeck))
-            """
-            A old continue button used for testing after loading a file
-            self.continueButton= Button(self.root, text="Continue", font=(200), compound="center", borderwidth=0, bg=bgcolour, highlightthickness=0, command=lambda:[self.cont(), self.root.quit, self.root.destroy], width = 80, height= 10)
-            self.continueButton.place(x=0, y=0) #places label at these pixels
-            """
             self.cont()
             self.root.mainloop()
         except:
@@ -72,16 +60,19 @@ def gameSelector():
     root.title('Card Games')
     root.geometry('1920x1080')
     root.config(bg=bgcolour)
+
     # Declaring constrants
     padx = 10
     pady = 10
     card = 0
     buttonRow = 0
-    menuRow = 1
-    i = 0
-    menuCol = 1
+    menuRow = 0
+    menuCol = 0
     cards = []
     gridSize = 8
+
+    #Sets up the cardGames to play
+    cardGames = [' Bridge',' Hearts',' Last Card',' Go Fish',' More to come']
 
     #labels
     tk.Label(root, text ="Card Games", fg='DarkGreen', bg=bgcolour, font = ("Times New Roman", 50)).grid(column = 2, row = 0, padx = padx, pady = pady)
@@ -90,13 +81,31 @@ def gameSelector():
     #Combobox creation
     n = tk.StringVar()
     gameChoosen = ttk.Combobox(root, textvariable = n)
-    # Adding combobox drop down list
-    gameChoosen['values'] = (' Bridge',' Hearts',' Last Card',' Go Fish',' More to come')  
+    # Adding combobox drop down list using the cardGames list 
+    gameChoosen['values'] = (cardGames)  
     gameChoosen.grid(column = 1, row = 1)
     #gameChoosen.current()
 
     def gameChanged():
-        print(gameChoosen.get())
+        errorWindow = tk.Tk()
+        errorWindow.title("Error")
+        #print(gameChoosen.get())
+        if gameChoosen.get() in cardGames:
+            cardGame = gameChoosen.get() #Makes cardgame the gamechoosen
+            errorWindow.destroy()
+            launchGame(cardGame)
+        elif gameChoosen.get() == "":
+            label = ttk.Label(errorWindow, text="Blank Card Game, Enter value")
+            label.pack(side="top", fill="x", pady=10)
+            errorLoad = tk.Button(errorWindow, text="Okay", command = errorWindow.destroy)
+            errorLoad.pack()
+        else:
+            label = ttk.Label(errorWindow, text="Invalid card game try again")
+            label.pack(side="top", fill="x", pady=10)
+            errorLoad = tk.Button(errorWindow, text="Okay", command = errorWindow.destroy)
+            errorLoad.pack()
+        
+        errorWindow.mainloop()
 
     gameSelectButton = tk.Button(root, text="Select Game", font=(200), compound="center", borderwidth=0, bg='red', highlightthickness=0, command= gameChoosen.bind('<<ComboboxSelected>>', gameChanged))
     gameSelectButton.grid(column = 1, row = 2, padx = padx, pady = pady)
@@ -109,7 +118,7 @@ def gameSelector():
         cardImg = ImageTk.PhotoImage(cardImg)
         cards.append(cardImg)
         card += 1
-        button=tk.Button(cardsFrame, image=cardImg, command= lambda i = i:  print(cardImg))
+        button=tk.Button(cardsFrame, image=cardImg, command=lambda:  print(cardImg))
         if buttonRow < gridSize:
             button.grid(row=menuRow,column=menuCol)
             buttonRow += 1
@@ -117,25 +126,16 @@ def gameSelector():
         if buttonRow == gridSize:
              menuRow += 1        
              buttonRow = 0
-             menuCol = 1
-
-    """def windowloop():
-        windowLoop = 0
-        while windowLoop <= 10:
-            if windowLoop == 0:
-                print("The width of Tkinter window:", root.winfo_width())
-                print("The height of Tkinter window:", root.winfo_height())
-                # time.sleep(50)"""
-                
-
-    
+             menuCol = 0
+ 
     root.mainloop()
     
-
-
+def launchGame(cardGame):
+    loadGame = cardGame.replace(" ", "").lower()
+    exec(open(loadGame+".py").read())
 
 
 #If the name of the program is called main it will run everything below.
 if __name__ == '__main__':
-    gameSelector()
-    #load()
+    #gameSelector()
+    load()
