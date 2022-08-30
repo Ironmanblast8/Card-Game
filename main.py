@@ -3,7 +3,9 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog as fd
+import tkinter
 from PIL import Image, ImageTk
+from os.path import exists
 
 bgcolour = ('lightgreen') #Sets bgcolour as global variable
 
@@ -41,6 +43,7 @@ class load():
             card_deck = deck.readline()
             cardDeck = ([card_deck[i:i+n] for i in range(0, len(card_deck), n)])
             random.shuffle((cardDeck))
+            
             self.cont()
             self.root.mainloop()
         except:
@@ -72,7 +75,7 @@ def gameSelector():
     gridSize = 8
 
     #Sets up the cardGames to play
-    cardGames = [' Bridge',' Hearts',' Last Card',' Go Fish',' More to come']
+    cardGames = [' Memory',' Hearts',' Last Card',' Go Fish',' More to come']
 
     #labels
     tk.Label(root, text ="Card Games", fg='DarkGreen', bg=bgcolour, font = ("Times New Roman", 50)).grid(column = 2, row = 0, padx = padx, pady = pady)
@@ -100,7 +103,7 @@ def gameSelector():
             errorLoad = tk.Button(errorWindow, text="Okay", command = errorWindow.destroy)
             errorLoad.pack()
         else:
-            label = ttk.Label(errorWindow, text="Invalid card game try again")
+            label = ttk.Label(errorWindow, text="Invalid card game try again, Might not exist yet")
             label.pack(side="top", fill="x", pady=10)
             errorLoad = tk.Button(errorWindow, text="Okay", command = errorWindow.destroy)
             errorLoad.pack()
@@ -111,7 +114,7 @@ def gameSelector():
     gameSelectButton.grid(column = 1, row = 2, padx = padx, pady = pady)
     cardsFrame = tk.Frame(root)
     cardsFrame.grid(rows=1, column=2)
-    print(cardDeck)
+    #print(cardDeck)
     while card < len(cardDeck):
         cardImg = (Image.open(f"cards/{cardDeck[card]}.gif"))
         cardImg = cardImg.resize((108 ,151)) # Halfs the size of the large playing cards. For the loading screen this is cause we don't need it to be large
@@ -132,8 +135,15 @@ def gameSelector():
     
 def launchGame(cardGame):
     loadGame = cardGame.replace(" ", "").lower()
-    exec(open(loadGame+".py").read())
-
+    if exists(loadGame+".py"):
+        exec(open(loadGame+".py").read())
+    else:
+        errorWindow = tk.Tk()
+        label = ttk.Label(errorWindow, text="Card game doesn't exist yet, Maybe add it?")
+        label.pack(side="top", fill="x", pady=10)
+        errorLoad = tk.Button(errorWindow, text="Okay", command = errorWindow.destroy)
+        errorLoad.pack()
+        errorWindow.mainloop()
 
 #If the name of the program is called main it will run everything below.
 if __name__ == '__main__':
