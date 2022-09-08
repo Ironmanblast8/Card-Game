@@ -1,3 +1,4 @@
+from logging import root
 import random
 import tkinter as tk
 from tkinter import *
@@ -7,19 +8,7 @@ import tkinter
 from PIL import Image, ImageTk
 from os.path import exists
 
-bgcolour = ('lightgreen') #Sets bgcolour as global variable
-
-# main_file = open("bridge1.txt", "r")
-# file = main_file.readline()
-# file = file[:-1]
-# cardNums = main_file.readline()
-# cardChar = main_file.readlines()
-# deck = open(file, "r")
-# n = 2
-# cardDeck = deck.readline()
-# cardDeck = ([cardDeck[i:i+n] for i in range(0, len(cardDeck), n)])
-# random.shuffle((cardDeck))
-
+bgcolour = ('firebrick1') #Sets bgcolour as global variable
 
 class load():
     def __init__(self):
@@ -43,7 +32,12 @@ class load():
             card_deck = deck.readline()
             cardDeck = ([card_deck[i:i+n] for i in range(0, len(card_deck), n)])
             random.shuffle((cardDeck))
-            
+            # open file in write mode
+            with open(r'carddeck.txt', 'w') as fp:
+                for item in cardDeck:
+                    # write each item on a new line
+                    fp.write("%s\n" % item)
+                print('Done')
             self.cont()
             self.root.mainloop()
         except:
@@ -72,7 +66,7 @@ def gameSelector():
     menuRow = 0
     menuCol = 0
     cards = []
-    gridSize = 8
+    gridSize = 10
 
     #Sets up the cardGames to play
     cardGames = [' Memory',' Hearts',' Last Card',' Go Fish',' More to come']
@@ -137,6 +131,7 @@ def launchGame(cardGame):
     loadGame = cardGame.replace(" ", "").lower()
     if exists(loadGame+".py"):
         exec(open(loadGame+".py").read())
+        root.destroy()
     else:
         errorWindow = tk.Tk()
         label = ttk.Label(errorWindow, text="Card game doesn't exist yet, Maybe add it?")

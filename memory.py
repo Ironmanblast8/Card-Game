@@ -1,55 +1,62 @@
 # memory game for platics in waterways / oceans
-import turtle
+import tkinter as tk
+from tkinter import *
+import random
+from PIL import Image, ImageTk
 from time import sleep
-from random import shuffle
+
+bgcolour = ('lightgreen') #Sets bgcolour as global variable
 
 
 def init():
-    global screen, cards
-    screen = turtle.Screen()
-    screen.title('Memory game match plastic in the ocean to remove')
-    screen.bgcolor("CornFlowerBlue")
-    sh_names = ["bag.gif", "bottle.gif", "net.gif", "straw.gif"]
-    screen.addshape("back.gif")
-    screen.addshape("fish.gif")
-    for fname in sh_names:
-        screen.addshape(fname)
-        
-    face_up = [False] * 9
-    card_type = ["bag", "bottle", "net", "straw"] * 2
-    card_type.append("fish")
-    shuffle(card_type)
-    card_pos = [(-130,-130), (0,-130), (130,-130), (-130,0), (0,0), (130,0), (-130,130), (0,130), (130,130)]
-    cards = []
-    for num in range(9):
-        t = turtle.Turtle()
-        t.front = card_type[num]
-        t.shape("back.gif")
-        t.penup()
-        t.goto(card_pos[num])
-        sleep(1)
-        cards.append(t)
-        # cards[num].shape(card_type[num]+".gif")
-    writer = turtle.Turtle()
-    writer.penup()
-    writer.ht()
-    for x in range(1,4):
-        writer.goto(x * 130 - 260, -225)
-        writer.write(x, move=False, align="left", font=("Arial", 18, "normal"))
-        writer.goto(-225, x * 130 - 260)
-        writer.write(x, move=False, align="left", font=("Arial", 18, "normal"))
-    
-def get_card():
-    global screen, cards
-    col = screen.numinput("get column", "Please enter 1 to 3 for column")
-    row = screen.numinput("get row", "Please enter 1 to 3 for row")
-    card_num = int((row - 1) * 3 + (col - 1))
-    cards[card_num].shape(cards[card_num].front + ".gif")
-    return cards[card_num].front, card_num
+        #Declaring constrants
+        gridSize = 15
+        buttonRow = 0
+        gameRow = 0
+        gameCol = 0
+        cards = []
 
-if __name__ == "__main__":
-    init()
-    card1, card1_num = get_card()
-    card2, card2_num = get_card()
-    if card1 != card2:
-        print("yes")
+        #Creating tkinter window 
+        root = Tk()
+        root.title('Memory')
+        root.geometry('1920x1080')
+        root.config(bg=bgcolour)
+
+        #Empty list will add the file list whihc is shuffled here.
+        card_names = []
+        #open file and read the content in a list
+        with open(r'carddeck.txt', 'r') as fp: #Opens the carddeck.txt file in read only (MUST BE CREATED THRU main.py FIRST)
+            for line in fp:
+                x = line[:-1]
+                # add current item to the list
+                card_names.append(x)
+        card_names = card_names*2 #Doubles the card_names list so that we have two of each card.
+        #Since we have appended to the list by doubling will shuffl the card_names list again
+        random.shuffle(card_names)
+
+        cardsFrame = tk.Frame(root)
+        cardsFrame.grid(rows=1, column=2)
+        for card in range(len(card_names)):
+            cardImg = (Image.open(f"cards/{card_names[card]}.gif"))
+            cardImg = cardImg.resize((108 ,151)) # Halfs the size of the large playing cards. For the loading screen this is cause we don't need it to be large
+            cardImg = ImageTk.PhotoImage(cardImg)
+            cards.append(cardImg)
+            card += 1
+            button=tk.Button(cardsFrame, image=cardImg, command=lambda card = card:  get_card(card))
+            if buttonRow < gridSize:
+                button.grid(row=gameRow,column=gameCol)
+                buttonRow += 1
+                gameCol += 1
+            if buttonRow == gridSize:
+                gameRow += 1        
+                buttonRow = 0
+                gameCol = 0
+        
+        root.mainloop()
+    
+def get_card(card):
+    print (card)
+
+
+#Initalizes the application, when loaded
+init()
